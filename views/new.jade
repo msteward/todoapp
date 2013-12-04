@@ -1,0 +1,10 @@
+h1 Add new Todo
+
+form(method="POST" , action="/todos")
+	input(type="hidden", name="_csrf", value="#{csrftoken}")
+	p Description:
+	input#description(type="text", name="description")
+	p Complete?:
+	input#complete(type="checkbox", checked="complete")
+
+	p: button(type="submit") Add New Todo

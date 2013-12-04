@@ -1,0 +1,13 @@
+h1 Showing All Todo Items
+
+ul
+- each todo in todos
+	li Description: #{todo.description}
+	li Complete?: #{todo.complete}
+	li 
+		a(href='todos/delete/#{todo.idtodos}') Delete
+	hr
+
+a(href="todos/new") Add New Todo
+br
+a(href="/") Home
