@@ -1,5 +1,5 @@
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3002');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     // res.header('Access-Control-Allow-Credentials', 'true');
@@ -13,7 +13,7 @@ function authenticateUser(username, password, done, public_id){
     // var password = connection.escape(password);
 
     var sql="SELECT * FROM users WHERE username = ? and password = ? limit 1";
-    connection.query(sql, [username, password],
+    connection.run(sql, [username, password],
         function (err,results) {
             if (err) { return done(err); }
             if(results.length > 0){
@@ -43,7 +43,8 @@ function isAuth(req, res, next) {
 var express = require('express'), 
 http = require('http'), 
 mysql = require('mysql'),
-path = require('path');
+path = require('path'),
+sqlite3 = require('sqlite3').verbose();
 
 //Setup Authentication
 var passport = require('passport')
@@ -80,21 +81,25 @@ app.configure(function(){
 // 	res.render('index');
 // });
 // Connect to mysql database
-var connection = mysql.createConnection({
-	host : 'localhost',
-	user : 'root',
-	password : 'password',
-	database : 'nodejs_todo'
-});
-connection.connect(function(err){
-  if(err){
-    console.log("Error Connecting to MySQL");
-    console.log('Error: ', err);
-  }
-  else{
-    console.log("Connection to MySQL Successful");
-  }
-});
+// var connection = mysql.createConnection({
+// 	host : 'localhost',
+// 	user : 'root',
+// 	password : 'password',
+// 	database : 'nodejs_todo'
+// });
+// connection.connect(function(err){
+//   if(err){
+//     console.log("Error Connecting to MySQL");
+//     console.log('Error: ', err);
+//   }
+//   else{
+//     console.log("Connection to MySQL Successful");
+//   }
+// });
+
+//Connect to the local SQLite3 DB
+var connection = new sqlite3.Database('db/todo_app');
+
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
@@ -114,7 +119,7 @@ app.post('/login',
 
 //Get all the todos
 app.get('/todos', isAuth, function (req, res) {
-	connection.query('select * from todos', function(err, docs) {
+	connection.run('select * from todos', function(err, docs) {
 		res.render('todos', {todos: docs});
 	});
 });
@@ -129,7 +134,7 @@ app.get("/todos/new", function (req, res) {
 app.post("/todos", function (req, res) {
 	var description=req.body.description;
 	var complete=req.body.complete;
-	connection.query('INSERT INTO todos (description, complete) VALUES (? , ?);' , [description, complete], function(err, docs) {
+	connection.run('INSERT INTO todos (description, complete) VALUES (? , ?);' , [description, complete], function(err, docs) {
 		if (err) res.json(err);
 		res.redirect('todos');
 	});
