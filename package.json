@@ -1,12 +1,16 @@
 {
-  "name": "application-name",
+  "name": "todo-app",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.4.4",
-    "jade": "*"
+    "express": ">=3.4.4",
+    "jade": "*",
+    "sqlite3": "*",
+    "passport": ">=0.1.17",
+    "knockout": ">=3.0.0",
+    "requirejs": ">=2.1.9"
   }
 }
